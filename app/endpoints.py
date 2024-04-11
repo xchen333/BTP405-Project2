@@ -55,7 +55,7 @@ class TableIdEndpoints(Resource):
 
     def put(self, table_id):
         parser = reqparse.RequestParser()
-        parser.add_argument("table_number", type=int)
+        parser.add_argument("table_number", type=str)
         parser.add_argument("capacity", type=int)
         parser.add_argument("is_available", type=inputs.boolean)
         args = parser.parse_args()

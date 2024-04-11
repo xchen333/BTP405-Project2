@@ -26,8 +26,8 @@ def clear_database_after_test(client):
 # Table
 def test_get_tables(client):
     # Create some sample tables
-    create_table(app.extensions['mongo'], table_number=1, capacity=4)
-    create_table(app.extensions['mongo'], table_number=2, capacity=2)
+    create_table(app.extensions['mongo'], table_number="1", capacity=4)
+    create_table(app.extensions['mongo'], table_number="2", capacity=2)
 
     # Get all tables
     response = client.get('/api/tables')
@@ -59,8 +59,8 @@ def test_create_table(client):
 
 def test_update_table(client):
     # Create some sample tables
-    create_table(app.extensions['mongo'], table_number=1, capacity=4)
-    create_table(app.extensions['mongo'], table_number=2, capacity=2)
+    create_table(app.extensions['mongo'], table_number="1", capacity=4)
+    create_table(app.extensions['mongo'], table_number="2", capacity=2)
 
     # Get the uuid of the first item
     table_id = json.loads(client.get('/api/tables').data)[0]['table_id']
@@ -68,24 +68,24 @@ def test_update_table(client):
     query = '/api/tables/' + table_id
 
     # Expecting success
-    response = client.put(query, json={'table_number': 3, 'capacity': 4})
+    response = client.put(query, json={'table_number': '3', 'capacity': 4})
     assert response.status_code == 200
     data = json.loads(response.data)
     assert data == {"message": "Table updated successfully"}
     response = client.get(query)
     assert response.status_code == 200
     data = json.loads(response.data)
-    assert data['table_number'] == 3
+    assert data['table_number'] == '3'
     assert data['capacity'] == 4
 
     # Expecting error due to duplicate table_number
-    response = client.put(query, json={'table_number': 2, 'capacity': 4})
+    response = client.put(query, json={'table_number': '2', 'capacity': 4})
     assert response.status_code == 400
     data = json.loads(response.data)
     assert data == {"error": "Duplicate table_number"}
 
     # Expecting error due to invalid id
-    response = client.put("/api/tables/invalid_id", json={'table_number': 3, 'capacity': 4})
+    response = client.put("/api/tables/invalid_id", json={'table_number': '3', 'capacity': 4})
     assert response.status_code == 404
     data = json.loads(response.data)
     assert data == {"error": "Table not found"}
@@ -93,8 +93,8 @@ def test_update_table(client):
 
 def test_delete_table(client):
     # Create some sample tables
-    create_table(app.extensions['mongo'], table_number=1, capacity=4)
-    create_table(app.extensions['mongo'], table_number=2, capacity=2)
+    create_table(app.extensions['mongo'], table_number="1", capacity=4)
+    create_table(app.extensions['mongo'], table_number="2", capacity=2)
 
     # Get the uuid of the first item
     table_id = json.loads(client.get('/api/tables').data)[0]['table_id']
@@ -220,7 +220,7 @@ def test_get_reservations(client):
     # Create sample reservation
     create_customer(app.extensions['mongo'], customer_name='Jane Smith', customer_email='jane.smith@example.com',
                     customer_phone='0987654321')
-    create_table(app.extensions['mongo'], table_number=1, capacity=4)
+    create_table(app.extensions['mongo'], table_number='1', capacity=4)
 
     customer_id = json.loads(client.get('/api/customers').data)[0]['customer_id']
     table_id = json.loads(client.get('/api/tables').data)[0]['table_id']
@@ -257,7 +257,7 @@ def test_create_reservations(client):
     # Expecting success
     create_customer(app.extensions['mongo'], customer_name='Jane Smith', customer_email='jane.smith@example.com',
                     customer_phone='0987654321')
-    create_table(app.extensions['mongo'], table_number=1, capacity=4)
+    create_table(app.extensions['mongo'], table_number='1', capacity=4)
 
     customer_id = json.loads(client.get('/api/customers').data)[0]['customer_id']
     table_id = json.loads(client.get('/api/tables').data)[0]['table_id']
@@ -277,7 +277,7 @@ def test_update_reservations(client):
     # Create sample reservation
     create_customer(app.extensions['mongo'], customer_name='Jane Smith', customer_email='jane.smith@example.com',
                     customer_phone='0987654321')
-    create_table(app.extensions['mongo'], table_number=1, capacity=4)
+    create_table(app.extensions['mongo'], table_number='1', capacity=4)
 
     customer_id = json.loads(client.get('/api/customers').data)[0]['customer_id']
     table_id = json.loads(client.get('/api/tables').data)[0]['table_id']
@@ -318,7 +318,7 @@ def test_delete_reservations(client):
     # Create sample reservation
     create_customer(app.extensions['mongo'], customer_name='Jane Smith', customer_email='jane.smith@example.com',
                     customer_phone='0987654321')
-    create_table(app.extensions['mongo'], table_number=1, capacity=4)
+    create_table(app.extensions['mongo'], table_number='1', capacity=4)
 
     customer_id = json.loads(client.get('/api/customers').data)[0]['customer_id']
     table_id = json.loads(client.get('/api/tables').data)[0]['table_id']
