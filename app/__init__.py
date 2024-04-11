@@ -7,7 +7,7 @@ from .endpoints import *
 app = Flask(__name__)
 
 # MongoDB configuration
-app.config["MONGO_URI"] = "mongodb://mongoUser:dd74d6aecd2a6ebb0@db:27017/restaurant"
+app.config["MONGO_URI"] = "mongodb://mongoUser:dd74d6aecd2a6ebb0@localhost:27017/restaurant"
 mongo = PyMongo(app)
 
 # Flask-Restful API setup

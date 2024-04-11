@@ -45,7 +45,7 @@ class Reservation:
         return {
             "reservation_id": self.reservation_id,
             "customer_id": self.customer_id,
-            "table_number": self.table_id,
+            "table_id": self.table_id,
             "datetime": self.datetime,
             "party_size": self.party_size
         }

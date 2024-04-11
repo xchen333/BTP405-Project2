@@ -77,6 +77,7 @@ def delete_customer(mongo, customer_id):
 def create_reservation(mongo, customer_id, table_id, datetime, party_size):
     new_reservation = Reservation(customer_id, table_id, datetime, party_size)
     mongo.db.reservations.insert_one(new_reservation.to_dict())
+    update_table(mongo, new_reservation.table_id, {'is_available': False})
 
 
 def get_reservations(mongo):
@@ -98,8 +99,19 @@ def update_reservation(mongo, reservation_id, updates):
 
 
 def delete_reservation(mongo, reservation_id):
-    result = mongo.db.reservations.delete_one({'reservation_id': reservation_id})
-    if result.deleted_count > 0:
+    to_be_deleted = get_reservation_by_id(mongo, reservation_id)
+    if to_be_deleted:
+        mongo.db.reservations.delete_one({'reservation_id': reservation_id})
+
+        reservations = get_reservations(mongo)
+        other_reservation_exist = False
+        for reservation in reservations:
+            if reservation['table_id'] == to_be_deleted['table_id']:
+                other_reservation_exist = True
+
+        if not other_reservation_exist:
+            update_table(mongo, to_be_deleted['table_id'], {'is_available': True})
+
         return True
     else:
         return False

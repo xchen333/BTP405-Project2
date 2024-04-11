@@ -15,4 +15,4 @@ RUN pip install -r requirements.txt
 
 EXPOSE 80 443
 
-CMD pytest -v && gunicorn -b 0.0.0.0:8080 app:app
+CMD gunicorn -b 0.0.0.0:8080 app:app
