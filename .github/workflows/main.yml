@@ -28,4 +28,4 @@ jobs:
         run: docker-compose ps
 
       - name: Run pytest
-        run: docker exec proj2_api_1 pytest
+        run: docker exec btp405-project2_api_1 pytest
