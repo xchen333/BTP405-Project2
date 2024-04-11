@@ -1,28 +1,31 @@
-name: Run pytest on push
+name: Run pytest with Docker Compose
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
-    name: Run pytest
     runs-on: ubuntu-latest
 
+    services:
+      docker:
+        image: docker:latest
+        options: --privileged
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+      - name: Build and run Docker Compose
+        run: docker-compose up -d
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Wait for services to start
+        run: docker-compose ps
 
-    - name: Run pytest
-      run: pytest
+      - name: Run pytest
+        run: docker exec proj2_api_1 pytest
