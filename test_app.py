@@ -238,10 +238,28 @@ def test_get_reservations(client):
 
 
 def test_create_reservations(client):
-    # Expecting success
+    # Expecting error due to unknown customer or table
     response = client.post('/api/reservations', json={
         "customer_id": "f2861e4f-41e9-4b92-932b-0772dd5e6bad",
         "table_id": "3cb1750d-7613-4cc4-9b58-3ab92bca45dc",
+        "datetime": "2024-04-10T19:00:00",
+        "party_size": 4
+    })
+    assert response.status_code == 500
+    data = json.loads(response.data)
+    assert data == {'error': '"table_id or customer_id does not exist"'}
+
+    # Expecting success
+    create_customer(app.extensions['mongo'], customer_name='Jane Smith', customer_email='jane.smith@example.com',
+                    customer_phone='0987654321')
+    create_table(app.extensions['mongo'], table_number=1, capacity=4)
+
+    customer_id = json.loads(client.get('/api/customers').data)[0]['customer_id']
+    table_id = json.loads(client.get('/api/tables').data)[0]['table_id']
+
+    response = client.post('/api/reservations', json={
+        "customer_id": customer_id,
+        "table_id": table_id,
         "datetime": "2024-04-10T19:00:00",
         "party_size": 4
     })
@@ -251,13 +269,18 @@ def test_create_reservations(client):
 
 
 def test_update_reservations(client):
-    # Create some sample reservations
-    create_reservation(app.extensions['mongo'], customer_id='f2861e4f-41e9-4b92-932b-0772dd5e6bad',
-                       table_id='3cb1750d-7613-4cc4-9b58-3ab92bca45dc', datetime='2024-04-10T19:00:00', party_size=4)
-    create_reservation(app.extensions['mongo'], customer_id='d4c7e5dc-d715-4184-abb6-bbad8d119e56',
-                       table_id='011a89f7-0a33-4fa3-8d32-7d3b53398e3d', datetime='2024-04-23T21:55:39', party_size=10)
+    # Create sample reservation
+    create_customer(app.extensions['mongo'], customer_name='Jane Smith', customer_email='jane.smith@example.com',
+                    customer_phone='0987654321')
+    create_table(app.extensions['mongo'], table_number=1, capacity=4)
 
-    # Get the uuid of the first item
+    customer_id = json.loads(client.get('/api/customers').data)[0]['customer_id']
+    table_id = json.loads(client.get('/api/tables').data)[0]['table_id']
+
+    create_reservation(app.extensions['mongo'], customer_id=customer_id, table_id=table_id,
+                       datetime='2024-04-10T19:00:00', party_size=4)
+
+    # Get the uuid
     reservation_id = json.loads(client.get('/api/reservations').data)[0]['reservation_id']
     # Create query string
     query = '/api/reservations/' + reservation_id
@@ -287,13 +310,18 @@ def test_update_reservations(client):
 
 
 def test_delete_reservations(client):
-    # Create some sample reservations
-    create_reservation(app.extensions['mongo'], customer_id='f2861e4f-41e9-4b92-932b-0772dd5e6bad',
-                       table_id='3cb1750d-7613-4cc4-9b58-3ab92bca45dc', datetime='2024-04-10T19:00:00', party_size=4)
-    create_reservation(app.extensions['mongo'], customer_id='d4c7e5dc-d715-4184-abb6-bbad8d119e56',
-                       table_id='011a89f7-0a33-4fa3-8d32-7d3b53398e3d', datetime='2024-04-23T21:55:39', party_size=10)
+    # Create sample reservation
+    create_customer(app.extensions['mongo'], customer_name='Jane Smith', customer_email='jane.smith@example.com',
+                    customer_phone='0987654321')
+    create_table(app.extensions['mongo'], table_number=1, capacity=4)
 
-    # Get the uuid of the first item
+    customer_id = json.loads(client.get('/api/customers').data)[0]['customer_id']
+    table_id = json.loads(client.get('/api/tables').data)[0]['table_id']
+
+    create_reservation(app.extensions['mongo'], customer_id=customer_id, table_id=table_id,
+                       datetime='2024-04-10T19:00:00', party_size=4)
+
+    # Get the uuid
     reservation_id = json.loads(client.get('/api/reservations').data)[0]['reservation_id']
     # Create query string
     query = '/api/reservations/' + reservation_id
@@ -306,7 +334,7 @@ def test_delete_reservations(client):
     response = client.get('/api/reservations')
     assert response.status_code == 200
     data = json.loads(response.data)
-    assert len(data) == 1
+    assert len(data) == 0
 
     # Expecting error due to invalid id
     response = client.delete("/api/reservations/invalid_id")
