@@ -76,8 +76,13 @@ def delete_customer(mongo, customer_id):
 # Reservation
 def create_reservation(mongo, customer_id, table_id, datetime, party_size):
     new_reservation = Reservation(customer_id, table_id, datetime, party_size)
-    mongo.db.reservations.insert_one(new_reservation.to_dict())
-    update_table(mongo, new_reservation.table_id, {'is_available': False})
+    customer_ids = [customer['customer_id'] for customer in get_customers(mongo)]
+    table_ids = [table['table_id'] for table in get_tables(mongo)]
+    if customer_id in customer_ids and table_id in table_ids:
+        mongo.db.reservations.insert_one(new_reservation.to_dict())
+        update_table(mongo, new_reservation.table_id, {'is_available': False})
+    else:
+        raise Exception("table_id or customer_id does not exist")
 
 
 def get_reservations(mongo):
