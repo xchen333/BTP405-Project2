@@ -4,6 +4,8 @@ Welcome to the documentation for the Restaurant Booking System API. It uses mong
 
 You can set up this project using `docker-compose`.
 
+### Link to Video: [Sharepoint](https://seneca-my.sharepoint.com/:v:/g/personal/xchen333_myseneca_ca/EZaD39mnJlBMuGIXw2KuY6QBlA98d7q1wPdTgdlIPcmMYg?e=iQoE4q&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
+
 ## Build and Run
 
 ### Reverse Proxy (Optional)
